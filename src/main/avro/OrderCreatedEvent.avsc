@@ -1,0 +1,37 @@
+{
+  "type": "record",
+  "name": "OrderCreatedEvent",
+  "namespace": "dev.danielsantiago.kafka.schema.registry.example.model",
+  "fields": [
+    {
+      "name": "orderId",
+      "type": "long"
+    },
+    {
+      "name": "timestamp",
+      "aliases": ["orderTimestamp"],
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "costumerId",
+      "type": "long"
+    },
+    {
+      "name": "amountCents",
+      "type": "long"
+    },
+    {
+      "name": "items",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "OrderItem",
+          "type": "dev.danielsantiago.kafka.schema.registry.example.model.OrderItem"
+        }
+      }
+    }
+  ]
+}

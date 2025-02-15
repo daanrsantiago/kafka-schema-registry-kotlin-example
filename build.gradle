@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            url = "https://packages.confluent.io/maven/"
+        }
+        maven {
+            url = "https://jitpack.io"
+        }
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.1.10'
+    id 'com.github.imflog.kafka-schema-registry-gradle-plugin' version '2.2.0'
+    id 'com.github.davidmc24.gradle.plugin.avro' version '1.9.1'
+}
+
+group = 'dev.danielsantiago.kafka.schema.registry.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://packages.confluent.io/maven'
+    }
+}
+
+dependencies {
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
+    implementation "org.apache.kafka:kafka-clients:7.8.1-ccs"
+    implementation 'org.apache.avro:avro:1.12.0'
+    implementation 'io.confluent:kafka-avro-serializer:7.8.1'
+    implementation "org.slf4j:slf4j-simple:1.7.36"
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+schemaRegistry {
+    url = 'http://localhost:8081/'
+    pretty = true
+
+    register {
+        subject('Orders.order_created-dev.danielsantiago.kafka.schema.registry.example.model.OrderCreatedEvent', './src/main/avro/OrderCreatedEvent.avsc', 'AVRO')
+        .addLocalReference("OrderItem", "./src/main/avro/OrderItem.avsc")
+    }
+
+    compatibility {
+        subject('Orders.order_created-dev.danielsantiago.kafka.schema.registry.example.model.OrderCreatedEvent', './src/main/avro/OrderCreatedEvent.avsc', 'AVRO')
+        .addLocalReference("OrderItem", "./src/main/avro/OrderItem.avsc")
+    }
+
+    config {
+        subject('Orders.order_created-dev.danielsantiago.kafka.schema.registry.example.model.OrderCreatedEvent', 'BACKWARD_TRANSITIVE')
+    }
+}
+
+
+
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
